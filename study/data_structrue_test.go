@@ -61,6 +61,7 @@ func TestSlice(t *testing.T) {
 	// 주의할 점은 붙일 slice 중 두번째에 ellipsis(...)를 붙여야 한다는 것.
 	// Go에서의 ellipsis는 여러 의미로 사용되는데, 여기서는 "unpacking" 의 의미이다. 해당 slice의 컬렉션을 표현하는 것( slice의 모든 element들의 집합)이래서 뭔가 했는데, 대충 slice에 있는 element들을 unpack해서 append같은 variadic function에 넣어준다는 것 같음.
 	sliceA := []int{1, 2, 3}
+	sliceA = append(sliceA, 10)
 	sliceB := []int{4, 5, 6}
 	sliceC := append(sliceA, sliceB...)
 	fmt.Println("sliceC", sliceC)
@@ -97,5 +98,8 @@ func TestMap(t *testing.T) {
 	}
 
 	println(val, exists)
+
+	kyoMap := map[string]string{"name": "kyo", "age": "12"}
+	fmt.Println(kyoMap)
 
 }

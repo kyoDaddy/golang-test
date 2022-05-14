@@ -219,6 +219,10 @@ func TestCondition(t *testing.T) {
 		println(val)
 	}
 
+	if age := max * 2; age > 18 {
+		fmt.Println("gogogogo pub!!")
+	}
+
 	// switch/case
 	// 1. 하나의 case 에 만족한다면 그 블럭을 실행하고 바로 switch문을 빠져 나온다.
 	score := 90
@@ -267,6 +271,16 @@ func TestCondition(t *testing.T) {
 
 }
 
+func superAdd(numbers ...int) int {
+	total := 0
+	//for i:=0; i<len(numbers); i++ {
+	for index, number := range numbers {
+		fmt.Println(index, number)
+		total += number
+	}
+	return total
+}
+
 func TestLoop(t *testing.T) {
 
 	// for : while 없고 for문만 있다.
@@ -289,5 +303,8 @@ func TestLoop(t *testing.T) {
 	}
 
 	// break<Label> 도 존재.. 필요할때 찾아보기...
+
+	add := superAdd(1, 2, 3, 4, 5, 6)
+	fmt.Println(add)
 
 }

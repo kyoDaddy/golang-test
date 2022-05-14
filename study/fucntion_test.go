@@ -3,6 +3,7 @@ package study
 import (
 	"fmt"
 	_ "fmt"
+	"strings"
 	"testing"
 )
 
@@ -13,6 +14,15 @@ func TestVariadic(t *testing.T) {
 
 	count, total := sum(1, 7, 3, 5, 9)
 	fmt.Println(count, total)
+
+	upper, _ := lenAndUpper("kyo")
+	fmt.Println(upper)
+
+}
+
+func lenAndUpper(name string) (int, string) {
+	defer fmt.Println("finish~~~")
+	return len(name), strings.ToUpper(name)
 }
 
 /* variadic function (가변인자함수)
@@ -33,6 +43,7 @@ func <func name>param1<param type>, ...param2<param type>) <return type> { }
 
 */
 func sum(nums ...int) (int, int) {
+	fmt.Println(nums)
 	s := 0     // 합계
 	count := 0 // 요소 갯수
 	for _, n := range nums {
