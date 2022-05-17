@@ -3,7 +3,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/labstack/echo/v4"
 	"golang-test/jobscrapper"
+	"os"
+	"strings"
 )
 
 // main package와 그 안에 있는 main function을 먼저 찾고 실행시킴
@@ -71,22 +74,30 @@ func main() {
 		}
 	*/
 
-	// job scrapper
-	var jobs []jobscrapper.ExtractedJob
-	c := make(chan []jobscrapper.ExtractedJob)
-	// step1 전체페이지
-	totalPages := jobscrapper.GetPages()
-	// step2 각페이지 정보 고루틴으로 병행 작업후 채널에 전달
-	for i := 0; i < totalPages; i++ {
-		go jobscrapper.GetPage(i, c)
-	}
-	// step3 각페이지 정보를 합치기
-	for i := 0; i < totalPages; i++ {
-		extractedJobs := <-c
-		jobs = append(jobs, extractedJobs...)
-	}
-	// step4 excel 생성
-	jobscrapper.WriteJobs(jobs)
-	fmt.Println("Done, extracted", len(jobs))
+	// echo server
+	// go get github.com/labstack/echo/v4
+	e := echo.New()
+	e.GET("/", handleHome)
+	e.POST("/scrape", handleScrape)
+	e.Logger.Fatal(e.Start(":1323"))
 
+}
+
+func handleHome(c echo.Context) error {
+	//return c.String(http.StatusOK, "Hello, World!")
+	return c.File("home.html")
+}
+
+func handleScrape(c echo.Context) error {
+	term := strings.ToLower(jobscrapper.CleanString(c.FormValue("term")))
+	fmt.Println("term:", term)
+
+	// job scrapper
+	jobs := jobscrapper.Scrape(term)
+	if len(jobs) > 0 {
+		fmt.Println("download:", jobscrapper.BaseFileName)
+		defer os.Remove(jobscrapper.BaseFileName)
+		return c.Attachment(jobscrapper.BaseFileName, jobscrapper.BaseFileName)
+	}
+	return nil
 }
