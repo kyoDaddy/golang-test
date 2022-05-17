@@ -3,8 +3,7 @@ package main
 
 import (
 	"fmt"
-	"golang-test/accounts"
-	"golang-test/mydict"
+	"golang-test/urlchecker"
 )
 
 // main package와 그 안에 있는 main function을 먼저 찾고 실행시킴
@@ -19,6 +18,7 @@ func main() {
 		something.SayHello()
 	*/
 
+	/* mydict test
 	//account := accounts.BankAccount{Owner: "kyo", Balance: 1000}
 	account := accounts.NewAccount("kyo")
 	account.Deposit(10)
@@ -50,5 +50,23 @@ func main() {
 	}
 
 	fmt.Println(dictionary)
+	*/
+
+	// url checker test
+	var results = make(map[string]string)
+	c := make(chan urlchecker.RequestResult)
+	urls := urlchecker.GetUrlArr()
+	for _, url := range urls {
+		go urlchecker.CheckUrl(url, c)
+	}
+
+	for i := 0; i < len(urls); i++ {
+		info := urlchecker.GetUrlInfo(<-c)
+		results[info[0]] = info[1]
+	}
+
+	for url, status := range results {
+		fmt.Println(url, status)
+	}
 
 }
