@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	"golang-test/urlchecker"
+	"golang-test/jobscrapper"
 )
 
 // main package와 그 안에 있는 main function을 먼저 찾고 실행시킴
@@ -53,20 +53,40 @@ func main() {
 	*/
 
 	// url checker test
-	var results = make(map[string]string)
-	c := make(chan urlchecker.RequestResult)
-	urls := urlchecker.GetUrlArr()
-	for _, url := range urls {
-		go urlchecker.CheckUrl(url, c)
-	}
+	/*
+		var results = make(map[string]string)
+		c := make(chan urlchecker.RequestResult)
+		urls := urlchecker.GetUrlArr()
+		for _, url := range urls {
+			go urlchecker.CheckUrl(url, c)
+		}
 
-	for i := 0; i < len(urls); i++ {
-		info := urlchecker.GetUrlInfo(<-c)
-		results[info[0]] = info[1]
-	}
+		for i := 0; i < len(urls); i++ {
+			info := urlchecker.GetUrlInfo(<-c)
+			results[info[0]] = info[1]
+		}
 
-	for url, status := range results {
-		fmt.Println(url, status)
+		for url, status := range results {
+			fmt.Println(url, status)
+		}
+	*/
+
+	// job scrapper
+	var jobs []jobscrapper.ExtractedJob
+	c := make(chan []jobscrapper.ExtractedJob)
+	// step1 전체페이지
+	totalPages := jobscrapper.GetPages()
+	// step2 각페이지 정보 고루틴으로 병행 작업후 채널에 전달
+	for i := 0; i < totalPages; i++ {
+		go jobscrapper.GetPage(i, c)
 	}
+	// step3 각페이지 정보를 합치기
+	for i := 0; i < totalPages; i++ {
+		extractedJobs := <-c
+		jobs = append(jobs, extractedJobs...)
+	}
+	// step4 excel 생성
+	jobscrapper.WriteJobs(jobs)
+	fmt.Println("Done, extracted", len(jobs))
 
 }
